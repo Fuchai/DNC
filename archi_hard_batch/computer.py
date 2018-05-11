@@ -5,6 +5,7 @@ from archi_hard_batch.controller import Controller
 from archi_hard_batch.memory import Memory
 import archi_hard_batch.param as param
 
+
 class Computer(nn.Module):
 
     def __init__(self):
@@ -32,3 +33,17 @@ class Computer(nn.Module):
         # to reset the values that depends on a particular sequence.
         self.controller.new_sequence_reset()
         self.last_read_vector.zero_()
+
+
+if __name__=="__main__":
+
+    story_limit=150
+    epoch_batches_count=1000
+    epochs_count=100
+    lr=1e-5
+    computer=Computer()
+    computer=computer.cuda()
+
+    optimizer=torch.optim.Adam(computer.parameters(),lr=lr)
+
+    train(computer,optimizer,story_limit, batch_size)

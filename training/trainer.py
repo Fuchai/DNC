@@ -7,6 +7,7 @@ import pdb
 from pathlib import Path
 import os
 from os.path import abspath
+import pathlib
 # task 10 of babi
 
 batch_size=param.bs
@@ -24,17 +25,15 @@ def save_model(net, optim, epoch):
     state_dict = net.state_dict()
     for key in state_dict.keys():
         state_dict[key] = state_dict[key].cpu()
-    task_dir = os.path.dirname(abspath(__file__))
-    print(task_dir)
-    pickle_file=Path("saves/DNC_"+str(epoch)+".pkl")
-    pickle_file=pickle_file.open('w')
+    this_file = Path(os.path.dirname(os.path.abspath(__file__)))
+    filepath=this_file.parents[0].joinpath("saves/DNC_" + str(epoch) + ".pkl")
 
-    torch.save({
-        'epoch': epoch,
-        'state_dict': state_dict,
-        'optimizer': optim},
-        pickle_file)
-
+    with open(filepath,'wb+') as f:
+        torch.save({
+            'epoch': epoch,
+            'state_dict': state_dict,
+            'optimizer': optim},
+            f)
 def run_one_story(computer, optimizer, story_length, batch_size, validate=False):
     # to promote code reuse
     input_data, target_output, critical_index = gendata(batch_size, validate=validate)
@@ -147,9 +146,9 @@ def train(computer, optimizer, story_length, batch_size):
 
             train_story_loss=run_one_story(computer, optimizer, story_length, batch_size)
             print("learning. epoch: %4d, batch number: %4d, training loss: %.4f" %
-                  (epoch+1, batch+1, train_story_loss.item()))
-            running_loss+=train_story_loss
-            val_freq=64
+                  (epoch+1, batch, train_story_loss.item()))
+            running_loss+=train_story_loss.item()
+            val_freq=100
             if batch%val_freq==val_freq-1:
                 print('summary.  epoch: %4d, batch number: %4d, running loss: %.4f' %
                       (epoch + 1, batch + 1, running_loss / val_freq))
@@ -157,8 +156,8 @@ def train(computer, optimizer, story_length, batch_size):
                 # also test the model
                 val_loss=run_one_story(computer, optimizer, story_length, batch_size, validate=False)
                 print('validate. epoch: %4d, batch number: %4d, validation loss: %.4f' %
-                      (epoch + 1, batch + 1, val_loss))
-                test_history+=[val_loss]
+                      (epoch + 1, batch + 1, val_loss.item()))
+                test_history+=[val_loss.item()]
 
             train_loss_history+=[train_story_loss]
 
@@ -170,9 +169,9 @@ def train(computer, optimizer, story_length, batch_size):
 if __name__=="__main__":
 
     story_limit=150
-    epoch_batches_count=10
-    epochs_count=10
-    lr=1e-5
+    epoch_batches_count=64
+    epochs_count=32
+    lr=1e-5 
     computer=Computer()
     computer=computer.cuda()
 

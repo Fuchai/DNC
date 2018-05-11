@@ -25,3 +25,4 @@ while(True):
     needed=hello.get_val()
     print("needed value accessed")
     time.sleep(1)
+

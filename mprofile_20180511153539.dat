@@ -1,0 +1,2 @@
+CMDLINE /home/jasonhu/anaconda3/bin/python training/trainer.py
+MEM 0.007812 1526070939.4568

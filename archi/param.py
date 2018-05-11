@@ -34,8 +34,7 @@ E_t=W*R+3*W+5*R+3
 # Total memory block (N, W)
 N=32
 
-# I am going to bake batch_processing in the DNC.
-# This is going to be a very tough week.
+# batch size
 bs=32
 
 

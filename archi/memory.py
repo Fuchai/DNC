@@ -11,6 +11,8 @@ import pdb
 import numpy
 from torch.nn.parameter import Parameter
 
+
+
 def test_simplex_bound(tensor,dim):
     t=tensor.contiguous().view(-1,dim)
     if (t.sum(1)>1).any() or (t.sum(1)<0).any() or (t<0).any() or (t>1).any():
@@ -285,7 +287,8 @@ class Memory(nn.Module):
         term1_2=torch.matmul(write_weighting.unsqueeze(2),erase_vector.unsqueeze(1))
         term1=self.memory.unsqueeze(0)*(torch.ones((param.bs,param.N,param.W)).cuda()-term1_2)
         term2=torch.matmul(write_weighting.unsqueeze(2),write_vector.unsqueeze(1))
-        self.memory.data=torch.mean(term1+term2, dim=0)
+        self.memory.data=torch.sum(term1+term2, dim=0)
+
 
     def forward(self,read_keys, read_strengths, write_key, write_strength,
                 erase_vector, write_vector, free_gates, allocation_gate,
